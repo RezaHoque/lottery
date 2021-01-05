@@ -348,3 +348,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/lottery/appsettings.json
+/lottery/wwwroot/images
+/lottery/appsettings.Development.json
+/lottery/Properties

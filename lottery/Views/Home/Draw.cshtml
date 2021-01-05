@@ -1,0 +1,140 @@
+﻿@model List<lottery.Models.ViewModels.MemberViewModel>
+
+<div class="text-center" style="font-size: larger;color: #58a6ff">
+    <strong>
+        কখন লাইগা যায়
+    </strong>
+
+</div>
+<div style="width: 100%; display: table;">
+    <div style="display: table-row">
+        @foreach (var m in Model)
+        {
+            if (m.HasWon)
+            {
+                <div style="display: table-cell;" class="text-center">
+                 
+                    <img src="@m.Member.PhotoPath" class="img-thumbnail rounded img-blur" width="150" height="150"/>
+                    <br />
+                    <div>
+                        <strong>@m.Member.Name</strong> 
+                        <br />
+                        <span style="color: #58a6ff">Winner of : @m.Wondate.ToString("MMMM")</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div style="display: table-cell;" class="text-center">
+                    <img src="@m.Member.PhotoPath" class="img-thumbnail rounded" width="150" height="150"/>
+                    <br />
+                    <span>@m.Member.Name</span>
+                </div>
+            }
+
+        }
+    </div>
+</div>
+<div class="text-center drawBox" id="drawStart">
+    <strong>
+        @DateTime.Now.ToString("MMMM")
+    </strong>
+    <br />
+    <button id="btndraw" class="btn-lg btn-danger"><i class="fas fa-trophy"></i> Draw <i class="fas fa-trophy"></i></button>
+</div>
+<div id="interim" class="text-center">
+    <img src="https://pa1.narvii.com/7543/e2e125c5f28fb949f10c442ca6a42f14a2392ff4r1-320-240_hq.gif" />
+</div>
+<div id="drawWinner" class="text-center">
+   <img src="~/images/giphy.gif" id="winnergf"/>
+   <div id="winnerData">
+       <strong style="color: #58a6ff" ">The winner of this month is : </strong>
+       <br />
+       <img src="" class="img-thumbnail rounded" width="150" height="150" id="winnerImage"/>
+       <br />
+       <span id="winnderName" style="font-size: larger;color: #58a6ff"></span>
+       <br />
+       <img src="" id="fireworks" />
+   </div>
+</div>
+
+<script>
+    const startElement = document.getElementById("drawStart");
+    const interimElement = document.getElementById("interim");
+    const winnerElement = document.getElementById("drawWinner");
+    const buttonElement = document.getElementById("btndraw");
+
+    const winnerDataElement = document.getElementById("winnerData");
+
+
+    interimElement.style.visibility = "hidden";
+    winnerElement.style.visibility = "hidden";
+    winnerDataElement.style.visibility = "hidden";
+
+    buttonElement.addEventListener("click", function (event) {
+        startElement.remove();
+        interimElement.style.visibility = "visible";
+
+        setTimeout(function () {
+            CallTheFunction();
+        }, 10000);
+
+    });
+
+    function CallTheFunction() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                interimElement.remove();
+                winnerElement.style.visibility = "visible";
+
+                var jsonObj = JSON.parse(this.responseText);
+              
+
+
+                setTimeout(function () {
+                    document.getElementById("winnerImage").src = jsonObj.member.photoPath;
+                    document.getElementById("winnderName").innerHTML = jsonObj.member.name;
+
+                    document.getElementById("fireworks").src = "/images/fireworks.gif";
+
+                    document.getElementById("winnergf").remove();
+                    winnerDataElement.style.visibility = "visible";
+
+                    fallingLeaves();
+                }, 10000);
+
+              
+            }
+        };
+        xhttp.open("GET", "/Home/GetDrawResult", true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send();
+    }
+
+    function fallingLeaves() {
+        var falling = true;
+
+        TweenLite.set("#container", { perspective: 600 })
+        TweenLite.set("img", { xPercent: "-50%", yPercent: "-50%" })
+
+        var total = 30;
+        var container = document.getElementById("container"), w = window.innerWidth, h = window.innerHeight;
+
+        for (i = 0; i < total; i++) {
+            var Div = document.createElement('div');
+            TweenLite.set(Div, { attr: { class: 'dot' }, x: R(0, w), y: R(-200, -150), z: R(-200, 200) });
+            container.appendChild(Div);
+            animm(Div);
+        }
+
+        function animm(elm) {
+            TweenMax.to(elm, R(6, 15), { y: h + 100, ease: Linear.easeNone, repeat: -1, delay: -15 });
+            TweenMax.to(elm, R(4, 8), { x: '+=100', rotationZ: R(0, 180), repeat: -1, yoyo: true, ease: Sine.easeInOut });
+            TweenMax.to(elm, R(2, 8), { rotationX: R(0, 360), rotationY: R(0, 360), repeat: -1, yoyo: true, ease: Sine.easeInOut, delay: -5 });
+        };
+
+        function R(min, max) { return min + Math.random() * (max - min) };
+    }
+
+</script>
