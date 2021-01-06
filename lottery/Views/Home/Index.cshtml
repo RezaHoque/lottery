@@ -1,8 +1,128 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "The great bangal jackpot";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center" id="dvAnimation">
+    <span style="font-size:25px;" id="connectionText">...</span>
+    <span class="blinking-cursor">_</span>
+    <br />
+    <img src="~/images/rocket.gif" width="400" height="300" />
 </div>
+<div id="dvButton" class="text-center">
+    <span style="font-size:25px;">Connected <i class="fas fa-rocket"></i></span>
+    <br />
+    <br />
+    <a href="/home/draw" class="btn-lg btn-danger">Draw now</a>
+</div>
+<script>
+    var btnElement = document.getElementById("dvButton");
+    btnElement.style.visibility = "hidden";
+    function init() {
+
+        wait(1000).then(() => {
+            clearText()
+            typeText('Hello! ').then(typeLoop)
+
+            setTimeout(function (){
+                document.getElementById("dvAnimation").remove();
+                btnElement.style.visibility = "visible";
+            },5000);
+        })
+
+        function typeLoop() {
+            typeText('Connecting to ')
+                .then(() => wait(2000))
+                .then(() => removeText('Connecting to '))
+                .then(() => typeText('satellite'))
+                .then(() => wait(2000))
+                .then(() => removeText('satellite'))
+                .then(typeLoop)
+        }
+
+    }
+
+
+    const elementNode = document.getElementById('connectionText')
+    let text = ''
+
+    function updateNode() {
+        elementNode.innerText = text
+    }
+
+    function pushCharacter(character) {
+        text += character
+        updateNode()
+    }
+
+    function popCharacter() {
+        text = text.slice(0, text.length - 1)
+        updateNode()
+    }
+
+    function clearText() {
+        text = ''
+        updateNode()
+    }
+
+
+    function wait(time) {
+        if (time === undefined) {
+            const randomMsInterval = 100 * Math.random()
+            time = randomMsInterval < 50 ? 10 : randomMsInterval
+        }
+
+        return new Promise(resolve => {
+            setTimeout(() => {
+                requestAnimationFrame(resolve)
+            }, time)
+        })
+    }
+
+    function typeCharacter(character) {
+        return new Promise(resolve => {
+            pushCharacter(character)
+            wait().then(resolve)
+        })
+    }
+
+    function removeCharacter() {
+        return new Promise(resolve => {
+            popCharacter()
+            wait().then(resolve)
+        })
+    }
+
+    function typeText(text) {
+        return new Promise(resolve => {
+
+            function type([character, ...text]) {
+                typeCharacter(character)
+                    .then(() => {
+                        if (text.length) type(text)
+                        else resolve()
+                    })
+            }
+
+            type(text)
+        })
+    }
+
+    function removeText({ length: amount }) {
+        return new Promise(resolve => {
+
+            function remove(count) {
+                removeCharacter()
+                    .then(() => {
+                        if (count > 1) remove(count - 1)
+                        else resolve()
+                    })
+            }
+
+            remove(amount)
+        })
+    }
+
+
+    init()
+
+</script>
