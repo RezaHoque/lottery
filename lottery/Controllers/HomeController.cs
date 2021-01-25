@@ -1,5 +1,6 @@
 ﻿using lottery.Models;
 using lottery.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,17 +33,25 @@ namespace lottery.Controllers
         {
             return View();
         }
+        [Authorize(Roles ="Admin")]
         public IActionResult Draw()
         {
-            var members = _memberService.GetMembers();
+            var members = _drawService.InitiateDraw();
 
             return View(members);
         }
         public IActionResult GetDrawResult()
         {
             var result = _drawService.Draw();
+           
+            if(result.Member!=null && !string.IsNullOrEmpty(result.Member.Name))
+            {
+                return Ok(result);
+            }
+            return Ok("finished");
 
-            return Ok(result);
+          
+  
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

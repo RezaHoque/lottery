@@ -1,14 +1,19 @@
-﻿@model List<lottery.Models.ViewModels.MemberViewModel>
+﻿@model lottery.Models.ViewModels.DrawViewModel
 
 <div class="text-center" style="font-size: larger;color: #58a6ff">
-    <strong>
-        কখন লাইগা যায়
-    </strong>
+    <p>
+        <strong>
+            কখন লাইগা যায়
+            <br />
+            Total @Model.TotalMembers members. Total @Model.TotalDraws draws.
+        </strong>
+    </p>
+  
 
 </div>
 <div style="width: 100%; display: table;">
     <div style="display: table-row">
-        @foreach (var m in Model)
+        @foreach (var m in Model.Members)
         {
             if (m.HasWon)
             {
@@ -40,7 +45,23 @@
         @DateTime.Now.ToString("MMMM")
     </strong>
     <br />
-    <button id="btndraw" class="btn-lg btn-danger"><i class="fas fa-trophy"></i> Draw <i class="fas fa-trophy"></i></button>
+    @if (Model.TotalDraws < Model.TotalMembers)
+    {
+        <button id="btndraw" class="btn-lg btn-danger"><i class="fas fa-trophy"></i> Draw <i class="fas fa-trophy"></i></button>
+    }
+    else
+    {
+        <div class="text-center" style="font-size: larger;color: #58a6ff">
+            <p>
+                <strong>
+                    I know what you are thinking, because I am also thinking what you think you are thinking. 
+                </strong>
+            </p>
+
+
+        </div>
+    }
+
 </div>
 <div id="interim" class="text-center">
     <img src="https://pa1.narvii.com/7543/e2e125c5f28fb949f10c442ca6a42f14a2392ff4r1-320-240_hq.gif" />
@@ -93,15 +114,20 @@
 
 
                 setTimeout(function () {
-                    document.getElementById("winnerImage").src = jsonObj.member.photoPath;
-                    document.getElementById("winnderName").innerHTML = jsonObj.member.name;
+                    if (jsonObj === "finished") {
+                        alert("No more draw available");
+                    } else {
+                        document.getElementById("winnerImage").src = jsonObj.member.photoPath;
+                        document.getElementById("winnderName").innerHTML = jsonObj.member.name;
 
-                    document.getElementById("fireworks").src = "/images/fireworks.gif";
+                        document.getElementById("fireworks").src = "/images/fireworks.gif";
 
-                    document.getElementById("winnergf").remove();
-                    winnerDataElement.style.visibility = "visible";
+                        document.getElementById("winnergf").remove();
+                        winnerDataElement.style.visibility = "visible";
+                    }
+                    
 
-                    fallingLeaves();
+                   
                 }, 10000);
 
               
@@ -112,29 +138,29 @@
         xhttp.send();
     }
 
-    function fallingLeaves() {
-        var falling = true;
+    //function fallingLeaves() {
+    //    var falling = true;
 
-        TweenLite.set("#container", { perspective: 600 })
-        TweenLite.set("img", { xPercent: "-50%", yPercent: "-50%" })
+    //    TweenLite.set("#container", { perspective: 600 })
+    //    TweenLite.set("img", { xPercent: "-50%", yPercent: "-50%" })
 
-        var total = 30;
-        var container = document.getElementById("container"), w = window.innerWidth, h = window.innerHeight;
+    //    var total = 30;
+    //    var container = document.getElementById("container"), w = window.innerWidth, h = window.innerHeight;
 
-        for (i = 0; i < total; i++) {
-            var Div = document.createElement('div');
-            TweenLite.set(Div, { attr: { class: 'dot' }, x: R(0, w), y: R(-200, -150), z: R(-200, 200) });
-            container.appendChild(Div);
-            animm(Div);
-        }
+    //    for (i = 0; i < total; i++) {
+    //        var Div = document.createElement('div');
+    //        TweenLite.set(Div, { attr: { class: 'dot' }, x: R(0, w), y: R(-200, -150), z: R(-200, 200) });
+    //        container.appendChild(Div);
+    //        animm(Div);
+    //    }
 
-        function animm(elm) {
-            TweenMax.to(elm, R(6, 15), { y: h + 100, ease: Linear.easeNone, repeat: -1, delay: -15 });
-            TweenMax.to(elm, R(4, 8), { x: '+=100', rotationZ: R(0, 180), repeat: -1, yoyo: true, ease: Sine.easeInOut });
-            TweenMax.to(elm, R(2, 8), { rotationX: R(0, 360), rotationY: R(0, 360), repeat: -1, yoyo: true, ease: Sine.easeInOut, delay: -5 });
-        };
+    //    function animm(elm) {
+    //        TweenMax.to(elm, R(6, 15), { y: h + 100, ease: Linear.easeNone, repeat: -1, delay: -15 });
+    //        TweenMax.to(elm, R(4, 8), { x: '+=100', rotationZ: R(0, 180), repeat: -1, yoyo: true, ease: Sine.easeInOut });
+    //        TweenMax.to(elm, R(2, 8), { rotationX: R(0, 360), rotationY: R(0, 360), repeat: -1, yoyo: true, ease: Sine.easeInOut, delay: -5 });
+    //    };
 
-        function R(min, max) { return min + Math.random() * (max - min) };
-    }
+    //    function R(min, max) { return min + Math.random() * (max - min) };
+    //}
 
 </script>

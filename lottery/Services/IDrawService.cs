@@ -9,5 +9,6 @@ namespace lottery.Services
     public interface IDrawService
     {
         MemberViewModel Draw();
+        DrawViewModel InitiateDraw();
     }
 }

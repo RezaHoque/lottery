@@ -31,10 +31,13 @@ namespace lottery.Services
                     mvm.HasWon = true;
                     mvm.Wondate = dr.DrawDate;
                 }
+                
 
                 result.Add(mvm);
             }
+            
             return result;
         }
+
     }
 }

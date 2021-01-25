@@ -25,21 +25,45 @@ namespace lottery.Services
             var list = new List<string>();
 
             list = _memberService.GetMembers().Where(x=>!x.HasWon).Select(x => x.Member.Name).ToList();
-            int index = random.Next(list.Count);
+            if (list.Any())
+            {
+                int index = random.Next(list.Count);
 
-            var winner= list[index];
+                var winner = list[index];
 
-            var wn= _memberService.GetMembers().Where(x => x.Member.Name == winner).FirstOrDefault();
+                var wn = _memberService.GetMembers().Where(x => x.Member.Name == winner).FirstOrDefault();
 
-            var draw = new Draw();
-            draw.Id = Guid.NewGuid().ToString();
-            draw.DrawDate = DateTime.Now;
-            draw.Winner = wn.Member;
+                var currentMonth = DateTime.Now.Month;
+                var lastDrawMonth = _ctx.Draws.OrderByDescending(x => x.DrawDate.Month).FirstOrDefault().DrawDate.Month;
 
-            _ctx.Draws.Add(draw);
-            _ctx.SaveChanges();
+                if (currentMonth > lastDrawMonth)
+                {
+                    var draw = new Draw();
+                    draw.Id = Guid.NewGuid().ToString();
+                    draw.DrawDate = DateTime.Now;
+                    draw.Winner = wn.Member;
 
-            return wn;
+                    _ctx.Draws.Add(draw);
+                    _ctx.SaveChanges();
+                }
+
+                
+                return wn;
+            }
+            return new MemberViewModel();
+            
+
+            
+        }
+
+        public DrawViewModel InitiateDraw()
+        {
+            var result = new DrawViewModel();
+            result.Members = (List<MemberViewModel>)_memberService.GetMembers();
+            result.TotalMembers = result.Members.Count();
+            result.TotalDraws = _ctx.Draws.Count();
+
+            return result;
         }
     }
 }
