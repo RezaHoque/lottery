@@ -36,8 +36,8 @@ namespace lottery.Services
                 var currentMonth = DateTime.Now.Month;
                 var lastDrawMonth = _ctx.Draws.OrderByDescending(x => x.DrawDate.Month).FirstOrDefault().DrawDate.Month;
 
-                if (currentMonth > lastDrawMonth)
-                {
+               // if (currentMonth > lastDrawMonth)
+                //{
                     var draw = new Draw();
                     draw.Id = Guid.NewGuid().ToString();
                     draw.DrawDate = DateTime.Now;
@@ -45,7 +45,7 @@ namespace lottery.Services
 
                     _ctx.Draws.Add(draw);
                     _ctx.SaveChanges();
-                }
+                //}
 
                 
                 return wn;
